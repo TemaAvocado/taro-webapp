@@ -9,7 +9,8 @@
         body {
             margin: 0;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: url('fon.jpg') no-repeat center center fixed;
+            background-size: cover;
             font-family: Arial, sans-serif;
             height: 100vh;
             display: flex;
@@ -19,94 +20,78 @@
         }
         
         .container {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 30px;
-            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
             text-align: center;
+            color: white;
             max-width: 90%;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
         
         .timer {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #e74c3c;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .instructions {
-            font-size: 18px;
-            margin-bottom: 25px;
-            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
         }
         
         .cards-container {
-            margin: 25px 0;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
+            margin: 20px 0;
         }
         
         .card {
-            width: 70px;
-            height: 100px;
-            background: linear-gradient(45deg, #8e44ad, #9b59b6);
-            border: 3px solid #34495e;
-            border-radius: 12px;
+            width: 80px;
+            height: 120px;
+            background: url('card.jpg') no-repeat center center;
+            background-size: cover;
+            border: 3px solid transparent;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            margin: 5px;
         }
         
         .card.selected {
             border-color: #e74c3c;
-            box-shadow: 0 0 25px rgba(231, 76, 60, 0.8);
-            transform: scale(1.15);
-            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.7);
+            transform: scale(1.1);
         }
         
-        .card:hover {
-            transform: translateY(-5px);
+        .card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         
         button {
-            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            background: #e74c3c;
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 30px;
-            font-size: 18px;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
             cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            margin-top: 15px;
+            transition: background 0.3s ease;
         }
         
         button:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+            background: #c0392b;
         }
         
         button:disabled {
             background: #7f8c8d;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
         }
         
         .counter {
-            margin: 15px 0;
+            margin: 10px 0;
             font-size: 16px;
-            color: #2c3e50;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -116,11 +101,11 @@
         <div class="timer" id="timer">⏰ Осталось: 30 секунд</div>
         
         <div class="cards-container">
-            <div class="card" data-index="1">1</div>
-            <div class="card" data-index="2">2</div>
-            <div class="card" data-index="3">3</div>
-            <div class="card" data-index="4">4</div>
-            <div class="card" data-index="5">5</div>
+            <div class="card" data-index="1"></div>
+            <div class="card" data-index="2"></div>
+            <div class="card" data-index="3"></div>
+            <div class="card" data-index="4"></div>
+            <div class="card" data-index="5"></div>
         </div>
         
         <div class="counter">Выбрано: <span id="selectedCount">0</span>/3</div>
@@ -136,12 +121,12 @@
         let timeLeft = 30;
         let timerInterval;
         
-        // Инициализация Telegram Web App
+        // Инициализация
         tg.expand();
         tg.BackButton.hide();
         console.log("✅ WebApp initialized");
 
-        // Таймер 30 секунд
+        // Таймер
         function startTimer() {
             timerInterval = setInterval(() => {
                 timeLeft--;
@@ -199,6 +184,16 @@
             const selectedCount = selectedCards.length;
             document.getElementById('selectedCount').textContent = selectedCount;
             document.getElementById('confirmBtn').disabled = selectedCount !== 3;
+            
+            // Блокируем лишние карты если выбрано 3
+            document.querySelectorAll('.card').forEach(card => {
+                const index = parseInt(card.dataset.index);
+                if (!card.classList.contains('selected') && selectedCount >= 3) {
+                    card.classList.add('disabled');
+                } else {
+                    card.classList.remove('disabled');
+                }
+            });
             
             console.log(`📊 UI updated: ${selectedCount}/3 cards selected`);
         }
